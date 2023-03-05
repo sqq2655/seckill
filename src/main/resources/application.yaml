@@ -54,6 +54,40 @@ spring:
         #最大空闲数
         max-idle: 8
         min-idle: 5
+  rabbitmq:
+    #服务器
+    host: 192.168.239.130
+    username: guest
+    password: guest
+    virtual-host: /
+    port: 5672
+    #监听
+    listener:
+      simple:
+        #消费者最小数量
+        concurrency: 10
+        #消费者最大数量
+        max-concurrency: 10
+        #限制消费者每次只处理一条数据，处理完毕后再处理下一条数据:1
+        prefetch: 1
+        # 启动时默认启动容器
+        auto-startup: true
+        #被拒绝时重新进入队列
+        default-requeue-rejected: true
+    template:
+      retry:
+        #发布重试，默认false
+        enabled: true
+        #重试时间
+        initial-interval: 1000ms
+        #重试最大次数
+        max-attempts: 3
+        #重试最大时间间隔默认10000毫秒
+        max-interval: 10000ms
+        #重试时间乘数
+        multiplier: 1
+
+
 # Mybatis-plus配置
 mybatis-plus:
   #配置Mapper映射文件
