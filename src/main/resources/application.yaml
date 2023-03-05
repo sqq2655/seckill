@@ -1,5 +1,19 @@
 
 spring:
+  #静态资源处理
+  resources:
+    add-mappings: true
+    cache:
+      cachecontrol:
+        max-age: 3600
+    chain:
+      cache: true
+      enabled: true
+      #启用压缩资源
+      compressed: true
+      html-application-cache: true
+    static-locations: classpath:/static/
+
   # thymeleaf配置
   thymeleaf:
     # 关闭缓存
