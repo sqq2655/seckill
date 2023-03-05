@@ -3,7 +3,9 @@ package com.sqq.seckill.controller;
 import com.sqq.seckill.pojo.User;
 import com.sqq.seckill.service.IGoodsService;
 import com.sqq.seckill.service.IUserService;
+import com.sqq.seckill.vo.DetailVo;
 import com.sqq.seckill.vo.GoodsVo;
+import com.sqq.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -77,18 +79,12 @@ public class GoodsController {
 
     }
 
-    @RequestMapping(value = "/toDetail/{goodsId}",produces = "text/html;charset=utf-8")
+    @RequestMapping(value = "/detail/{goodsId}")
     @ResponseBody
-    public String toDetail(Model model, User user, @PathVariable Long goodsId,
-                           HttpServletRequest request,HttpServletResponse response){
+    public RespBean detail(User user, @PathVariable Long goodsId,
+                             HttpServletRequest request, HttpServletResponse response){
 
-        //将页面缓存到redis
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        String html = (String) valueOperations.get("goodsDetail:"+goodsId);
-        if (!StringUtils.isEmpty(html)){
-            return html;
-        }
-        model.addAttribute("user",user);
+
         GoodsVo goodsVo = iGoodsService.findGoodsVoByGoodsId(goodsId);
         Date startDate = goodsVo.getStartDate();
         Date endDate = goodsVo.getEndDate();
@@ -108,17 +104,13 @@ public class GoodsController {
             remainSeconds = 0;
         }
 
-        model.addAttribute("goods",goodsVo);
-        model.addAttribute("secKillStatus",secKillStatus);
-        model.addAttribute("remainSeconds",remainSeconds);
+        DetailVo detailVo = new DetailVo();
+        detailVo.setTuser(user);
+        detailVo.setGoodsVo(goodsVo);
+        detailVo.setRemainSeconds(remainSeconds);
+        detailVo.setSecKillStatus(secKillStatus);
 //        return "goodsDetail";
-        //如果redis为空，手动渲染
-        WebContext context = new WebContext(request, response,request.getServletContext()
-                ,request.getLocale(),model.asMap());
-        html = thymeleafViewResolver.getTemplateEngine().process("goodsDetail", context);
-        if (!StringUtils.isEmpty(html)){
-            valueOperations.set("goodsDetail:"+goodsId,html,60, TimeUnit.SECONDS);
-        }
-        return html;
+
+        return RespBean.success(detailVo);
     }
 }
