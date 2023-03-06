@@ -16,6 +16,7 @@ import com.sqq.seckill.vo.RespBeanEnum;
 import com.sqq.seckill.vo.SeckillMessage;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
@@ -59,7 +60,7 @@ public class SecKillController implements InitializingBean {
     * */
     private Map<Long,Boolean> EmptyStockMap = new HashMap<>();
     /*
-    * windos优化器前QPS 1719，
+    * windos优化器前QPS 1719，优化后qps 3506
     * Linux优化前QPS：299
     * */
     @RequestMapping( value = "/doSeckill",method = RequestMethod.POST)
@@ -99,20 +100,38 @@ public class SecKillController implements InitializingBean {
     }
 
     /*
+     * 获取秒杀结果
+     * orderId 成功， -1，秒杀失败；0，秒杀成功。
+     * */
+    @RequestMapping(value = "/result",method = RequestMethod.GET)
+    @ResponseBody
+    public RespBean getResult(User user,Long goodsId) {
+        if (user == null){
+             return RespBean.error(RespBeanEnum.SESSION_ERROR);
+        }
+        Long orderId = iSeckillOrderService.getResult(user,goodsId);
+        return RespBean.success(orderId);
+
+    }
+
+
+    /*
     * 初始化时执行一些方法
     *
     * */
     @Override
     public void afterPropertiesSet() throws Exception {
-
-        List<GoodsVo> list = iGoodsService.findGoodsVo();
-        if (CollectionUtils.isEmpty(list)){
+        List<GoodsVo> lists = iGoodsService.findGoodsVo();
+        if (CollectionUtils.isEmpty(lists)){
             return ;
         }
-        list.forEach(goodsVo ->{
-            redisTemplate.opsForValue().set("seckillGoods:" + goodsVo.getId(),goodsVo.getStockCount());
-            EmptyStockMap.put(goodsVo.getId(),false);
-        });
+        for (GoodsVo goodsVo : lists) {
+            redisTemplate.opsForValue().set("seckillGoods:" + goodsVo.getId(), goodsVo.getStockCount());
+            EmptyStockMap.put(goodsVo.getId(), false);
+        }
 
     }
+
+
+
 }

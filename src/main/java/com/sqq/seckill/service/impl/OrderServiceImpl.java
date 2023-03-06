@@ -70,14 +70,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq("goods_id", goodsVo.getId())
                 .gt("stock_count", 0)
         );
-        if(!result){
+        if (seckillGoods.getStockCount() < 1) {
+            //判断是否还有库存
+            valueOperations.set("isStockEmpty:" + goodsVo.getId(), "0");
             return null;
         }
-//        if (seckillGoods.getStockCount() < 1) {
-//            //判断是否还有库存
-//            valueOperations.set("isStockEmpty:" + goodsVo.getId(), "0");
-//            return null;
-//        }
         Order order = new Order();
         order.setUserId(user.getId());
         order.setGoodsId(goodsVo.getId());

@@ -33,7 +33,7 @@
             sg.end_date
         from
             t_goods g
-        left JOIN t_seckill_goods as sg on g.id = sg.id
+        left JOIN t_seckill_goods as sg on g.id = sg.goods_id
     </select>
 
     <select id="findGoodsVoByGoodsId" resultType="com.sqq.seckill.vo.GoodsVo">
