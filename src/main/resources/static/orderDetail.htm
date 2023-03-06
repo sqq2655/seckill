@@ -68,7 +68,7 @@
         </tr>
         <tr>
             <td>收货人</td>
-            <td colspan="2">XXX 18012345678</td>
+            <td colspan="2" id="uid"></td>
         </tr>
         <tr>
             <td>收货地址</td>
@@ -104,11 +104,12 @@
 
         function render(detail) {
             var goods = detail.goodsVo;
-            var order = detail.torder;
+            var order = detail.order;
             $("#goodsName").text(goods.goodsName);
             $("#goodsImg").attr("src", goods.goodsImg);
             $("#goodsPrice").text(order.goodsPrice);
             $("#createDate").text(new Date(order.createDate).format("yyyy-MM-dd HH:mm:ss"));
+            $("#uid").text(order.userId);
             var status = order.status;
             var statusText = ""
             switch (status) {

@@ -2,7 +2,6 @@ package com.sqq.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sqq.seckill.exception.GlobeException;
 import com.sqq.seckill.mapper.OrderMapper;
@@ -14,6 +13,8 @@ import com.sqq.seckill.service.IGoodsService;
 import com.sqq.seckill.service.IOrderService;
 import com.sqq.seckill.service.ISeckillGoodsService;
 import com.sqq.seckill.service.ISeckillOrderService;
+import com.sqq.seckill.utils.MD5Util;
+import com.sqq.seckill.utils.UUIDUtil;
 import com.sqq.seckill.vo.GoodsVo;
 import com.sqq.seckill.vo.OrderDetailVo;
 import com.sqq.seckill.vo.RespBeanEnum;
@@ -22,9 +23,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -110,5 +113,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderDetailVo.setGoodsVo(goodsVo);
         orderDetailVo.setOrder(order);
         return orderDetailVo;
+    }
+
+    /*
+    * 获取秒杀地址
+    * */
+    @Override
+    public String createPath(User user, Long goodsId) {
+
+        String str = MD5Util.md5(UUIDUtil.uuid()+"123456");
+        redisTemplate.opsForValue().set("seckillPath:"+user.getId()+":"+goodsId,str,60, TimeUnit.SECONDS);
+        return str;
+    }
+
+    @Override
+    public boolean checkPath(User user, Long goodsId, String path) {
+        if (user == null || goodsId<0 || StringUtils.isEmpty(path)){
+            return false;
+        }
+        String redisPath = (String) redisTemplate.opsForValue().get("seckillPath:" + user.getId() + ":" + goodsId);
+        return path.equals(redisPath);
+    }
+
+    /*
+    * 校验验证码
+    * */
+    @Override
+    public boolean checkCaptcha(User user, Long goodsId, String captcha) {
+        if(StringUtils.isEmpty(captcha) || user==null || goodsId<0){
+            return false;
+        }
+        String redisCaptcha = (String) redisTemplate.opsForValue().get("captcha:" + user.getId() + ":" + goodsId);
+
+        return captcha.equals(redisCaptcha);
     }
 }
