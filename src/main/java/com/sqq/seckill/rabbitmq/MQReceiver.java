@@ -38,6 +38,7 @@ public class MQReceiver {
         SeckillMessage seckillMessage = JsonUtil.jsonStr2Object(message, SeckillMessage.class);
         Long goodsId = seckillMessage.getGoodsId();
         User user = seckillMessage.getUser();
+        //判断库存
         GoodsVo goodsVo = iGoodsService.findGoodsVoByGoodsId(goodsId);
         if (goodsVo.getStockCount() < 1) {
             return;
