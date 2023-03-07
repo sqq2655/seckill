@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetailVo {
 
-	private User tuser;
+	private User user;
 
 	private GoodsVo goodsVo;
 
