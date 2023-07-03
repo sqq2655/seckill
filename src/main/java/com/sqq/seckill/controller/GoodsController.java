@@ -84,7 +84,8 @@ public class GoodsController {
     public RespBean detail(User user, @PathVariable Long goodsId,
                              HttpServletRequest request, HttpServletResponse response){
 
-
+//        System.out.println(user);
+//        System.out.println(user+":"+goodsId);
         GoodsVo goodsVo = iGoodsService.findGoodsVoByGoodsId(goodsId);
         Date startDate = goodsVo.getStartDate();
         Date endDate = goodsVo.getEndDate();
@@ -105,7 +106,7 @@ public class GoodsController {
         }
 
         DetailVo detailVo = new DetailVo();
-        detailVo.setTuser(user);
+        detailVo.setUser(user);
         detailVo.setGoodsVo(goodsVo);
         detailVo.setRemainSeconds(remainSeconds);
         detailVo.setSecKillStatus(secKillStatus);

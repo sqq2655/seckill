@@ -6,6 +6,7 @@ import com.sqq.seckill.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0
  * @date 2023/3/2 19:10
  */
-@Configuration
+@Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Autowired
@@ -36,13 +37,16 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer,
                                   NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-        HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-        HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
-        String ticket = CookieUtil.getCookieValue(request, "userTicket");
-        if(StringUtils.isEmpty(ticket)){
-            return null;
-        }
+//        HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
+//        HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
+//        String ticket = CookieUtil.getCookieValue(request, "userTicket");
+//        if(StringUtils.isEmpty(ticket)){
+//            return null;
+//        }
+//
+//        return userService.getUserByCookie(ticket,request,response);
 
-        return userService.getUserByCookie(ticket,request,response);
+        return UserContext.getUser();
+
     }
 }

@@ -1,6 +1,7 @@
 package com.sqq.seckill.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sqq.seckill.config.AccessLimit;
 import com.sqq.seckill.exception.GlobeException;
 import com.sqq.seckill.pojo.Order;
 import com.sqq.seckill.pojo.SeckillOrder;
@@ -128,6 +129,7 @@ public class SecKillController implements InitializingBean {
 
 
 
+    @AccessLimit(second = 5, maxCount = 5, needLogin = true)
     @RequestMapping("/path")
     @ResponseBody
     public RespBean getPath(User user,Long goodsId,String captcha){
