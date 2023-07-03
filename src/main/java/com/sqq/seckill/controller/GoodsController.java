@@ -84,8 +84,8 @@ public class GoodsController {
     public RespBean detail(User user, @PathVariable Long goodsId,
                              HttpServletRequest request, HttpServletResponse response){
 
-        System.out.println(user);
-        System.out.println(user+":"+goodsId);
+//        System.out.println(user);
+//        System.out.println(user+":"+goodsId);
         GoodsVo goodsVo = iGoodsService.findGoodsVoByGoodsId(goodsId);
         Date startDate = goodsVo.getStartDate();
         Date endDate = goodsVo.getEndDate();
